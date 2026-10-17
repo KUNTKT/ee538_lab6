@@ -13,11 +13,17 @@ struct Node {
 };
 
 bool isCircularTwoPointer(const Node* head) {
-    // TODO: detect any cycle reachable through next pointers using Floyd's
+    // Detect any cycle reachable through next pointers using Floyd's
     // slow/fast pointers. Empty/linear chains: false; any cycle: true.
     // Do not modify nodes. O(n) time and O(1) auxiliary space.
-    (void)head;
-    throw std::logic_error("TODO: isCircularTwoPointer");
+    const Node* slow = head;
+    const Node* fast = head;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast) return true;
+    }
+    return false;
 }
 
 enum class DeleteResult { removed, invalid_or_empty, out_of_bounds };
@@ -39,31 +45,68 @@ public:
     }
 
     void addFirst(int data) {
-        // TODO: prepend; maintain head_, tail_, prev and next. O(1).
-        (void)data;
-        throw std::logic_error("TODO: addFirst");
+        // Prepend; maintain head_, tail_, prev and next. O(1).
+        Node* node = new Node(data);
+        node->next = head_;
+        if (head_) head_->prev = node;
+        else tail_ = node;
+        head_ = node;
     }
     void append(int data) {
-        // TODO: append using tail_, including an empty list. O(1).
-        (void)data;
-        throw std::logic_error("TODO: append");
+        // Append using tail_, including an empty list. O(1).
+        Node* node = new Node(data);
+        node->prev = tail_;
+        if (tail_) tail_->next = node;
+        else head_ = node;
+        tail_ = node;
     }
     void insert(int data, int pos) {
-        // TODO: pos <= 0 prepends; pos >= length appends. O(n).
-        (void)data; (void)pos;
-        throw std::logic_error("TODO: insert");
+        // pos <= 0 prepends; pos >= length appends. O(n).
+        if (pos <= 0 || !head_) {
+            addFirst(data);
+            return;
+        }
+        Node* cur = head_;
+        int index = 0;
+        while (cur && index < pos) {
+            cur = cur->next;
+            ++index;
+        }
+        if (!cur) {
+            append(data);
+            return;
+        }
+        Node* node = new Node(data);
+        node->next = cur;
+        node->prev = cur->prev;
+        cur->prev->next = node;
+        cur->prev = node;
     }
     DeleteResult deleteAtIndex(int index) {
-        // TODO: negative index OR empty list -> invalid_or_empty;
+        // Negative index OR empty list -> invalid_or_empty;
         // nonnegative index >= length in nonempty list -> out_of_bounds;
         // otherwise unlink/delete that node and return removed. O(n).
-        (void)index;
-        throw std::logic_error("TODO: deleteAtIndex");
+        if (index < 0 || !head_) return DeleteResult::invalid_or_empty;
+        Node* cur = head_;
+        int i = 0;
+        while (cur && i < index) {
+            cur = cur->next;
+            ++i;
+        }
+        if (!cur) return DeleteResult::out_of_bounds;
+        if (cur->prev) cur->prev->next = cur->next;
+        else head_ = cur->next;
+        if (cur->next) cur->next->prev = cur->prev;
+        else tail_ = cur->prev;
+        delete cur;
+        return DeleteResult::removed;
     }
     const Node* search(int data) const {
-        // TODO: first matching node or nullptr. O(n).
-        (void)data;
-        throw std::logic_error("TODO: search");
+        // First matching node or nullptr. O(n).
+        for (const Node* node = head_; node; node = node->next) {
+            if (node->data == data) return node;
+        }
+        return nullptr;
     }
     bool isCircularTwoPointer() const {
         return ::isCircularTwoPointer(head_);
