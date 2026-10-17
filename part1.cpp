@@ -29,40 +29,80 @@ public:
     bool isEmpty() const { return head_ == nullptr; }
 
     void addFirst(int data) {
-        // TODO: insert one new node at the head. O(1).
-        (void)data;
-        throw std::logic_error("TODO: addFirst");
+        // Insert one new node at the head. O(1).
+        Node* node = new Node(data);
+        node->next = head_;
+        head_ = node;
     }
 
     void append(int data) {
-        // TODO: append one new node, including when the list is empty. O(n).
-        (void)data;
-        throw std::logic_error("TODO: append");
+        // Append one new node, including when the list is empty. O(n).
+        if (!head_) {
+            addFirst(data);
+            return;
+        }
+        Node* tail = head_;
+        while (tail->next) tail = tail->next;
+        tail->next = new Node(data);
     }
 
     void insert(int data, int pos) {
-        // TODO: pos <= 0 means prepend; pos >= length means append. O(n).
-        (void)data; (void)pos;
-        throw std::logic_error("TODO: insert");
+        // pos <= 0 means prepend; pos >= length means append. O(n).
+        if (pos <= 0 || !head_) {
+            addFirst(data);
+            return;
+        }
+        Node* prev = head_;
+        int index = 0;
+        while (prev->next && index < pos - 1) {
+            prev = prev->next;
+            ++index;
+        }
+        if (!prev->next) {
+            prev->next = new Node(data);
+            return;
+        }
+        Node* node = new Node(data);
+        node->next = prev->next;
+        prev->next = node;
     }
 
     bool deleteNode(int data) {
-        // TODO: remove/delete only the first matching node. Return success.
+        // Remove/delete only the first matching node. Return success.
         // Return false if no match, including an empty list. O(n).
-        (void)data;
-        throw std::logic_error("TODO: deleteNode");
+        if (!head_) return false;
+        if (head_->data == data) {
+            Node* old = head_;
+            head_ = head_->next;
+            delete old;
+            return true;
+        }
+        Node* prev = head_;
+        while (prev->next && prev->next->data != data) prev = prev->next;
+        if (!prev->next) return false;
+        Node* old = prev->next;
+        prev->next = old->next;
+        delete old;
+        return true;
     }
 
     const Node* search(int data) const {
-        // TODO: return the first matching node or nullptr. O(n).
-        (void)data;
-        throw std::logic_error("TODO: search");
+        // Return the first matching node or nullptr. O(n).
+        for (const Node* node = head_; node; node = node->next) {
+            if (node->data == data) return node;
+        }
+        return nullptr;
     }
 
     std::optional<int> pop() {
-        // TODO: return/remove/delete the first node; nullopt if empty. O(1).
+        // Return/remove/delete the first node; nullopt if empty. O(1).
         // All int values, including -1, are valid data.
-        throw std::logic_error("TODO: pop");
+        if (!head_) return std::nullopt;
+        Node* old = head_;
+        const int value = old->data;
+        head_ = head_->next;
+        delete old;
+        return value;
     }
 
     void display() const {
