@@ -34,21 +34,41 @@ public:
     int size() const { return count_; }
 
     bool enqueue(int data) {
-        // TODO: if full, return false without changing the queue.
+        // If full, return false without changing the queue.
         // Otherwise allocate/link one node, update tail_ and count_, return true.
         // Empty queue: the new node points to itself. O(1).
-        (void)data;
-        throw std::logic_error("TODO: enqueue");
+        if (isFull()) return false;
+        Node* node = new Node(data);
+        if (!tail_) {
+            node->next = node;
+        } else {
+            node->next = tail_->next;
+            tail_->next = node;
+        }
+        tail_ = node;
+        ++count_;
+        return true;
     }
     std::optional<int> dequeue() {
-        // TODO: nullopt if empty; otherwise remove/delete tail_->next,
+        // nullopt if empty; otherwise remove/delete tail_->next,
         // update tail_/count_, return the removed value. O(1).
-        throw std::logic_error("TODO: dequeue");
+        if (isEmpty()) return std::nullopt;
+        Node* front = tail_->next;
+        const int value = front->data;
+        if (front == tail_) {
+            tail_ = nullptr;
+        } else {
+            tail_->next = front->next;
+        }
+        delete front;
+        --count_;
+        return value;
     }
     std::optional<int> peek() const {
-        // TODO: front value without modifying the queue; nullopt if empty.
+        // Front value without modifying the queue; nullopt if empty.
         // -1 is valid data, not an empty-queue marker. O(1).
-        throw std::logic_error("TODO: peek");
+        if (isEmpty()) return std::nullopt;
+        return tail_->next->data;
     }
     void display() const {
         if (!tail_) { std::cout << "Queue is empty.\n"; return; }
